@@ -22,5 +22,5 @@ test:
 	@clear
 	@make docker-cmd COMMAND="go test -v -coverprofile=c.out"
 
-open-test-coverage:
+coverage:
 	@go tool cover -html=c.out
