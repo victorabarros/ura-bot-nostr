@@ -8,9 +8,10 @@ import (
 	"github.com/nbd-wtf/go-nostr/nip19"
 )
 
-type contextKey string
+// ContextKey is a type for context keys
+type ContextKey string
 
-const urlKey contextKey = "url"
+const urlKey ContextKey = "url"
 
 var (
 	WORKING_RELAYS = []string{
