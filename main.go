@@ -97,37 +97,33 @@ var (
 )
 
 func main() {
-	var nsec string = ""
+	ev := nostr.Event{
+		CreatedAt: nostr.Now(),
+		Kind:      nostr.KindTextNote,
+		Content:   "content from go-nostr 99 example from relay",
+	}
 
+	var nsec string = ""
 	_, s, e := nip19.Decode(nsec)
 	if e != nil {
 		panic(e)
 	}
-
 	sk := s.(string)
-
-	ev := nostr.Event{
-		CreatedAt: nostr.Now(),
-		Kind:      nostr.KindTextNote,
-		Content:   "content from go-nostr 69 example from relay",
+	if err := ev.Sign(sk); err != nil {
+		fmt.Println("fail to sign event", err.Error())
 	}
 
 	for _, url := range WORKING_RELAYS {
-		if ev.Sign(sk) != nil {
-			fmt.Println("fail to sign")
-			continue
-		}
-
 		ctx := context.WithValue(context.Background(), urlKey, url)
-		relay, e := nostr.RelayConnect(ctx, url)
-		if e != nil {
-			fmt.Println(e)
+		relay, err := nostr.RelayConnect(ctx, url)
+		if err != nil {
+			fmt.Println("fail to connect to relay", err.Error())
 			continue
 		}
 
-		fmt.Println("posting to: ", url)
-		if relay.Publish(ctx, ev) != nil {
-			fmt.Println("fail to Publish")
+		fmt.Println("posting event to: ", url)
+		if err := relay.Publish(ctx, ev); err != nil {
+			fmt.Println("fail to publish to relay", err.Error())
 			continue
 		}
 	}
